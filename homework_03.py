@@ -31,7 +31,10 @@ table for correlations and betas of all names in the universe vs that portfolio.
 The output will be a table with fixed columns:
 [ric, correlation, abs_correlation, beta].
 
-The size of the table is equal to the universe you are given (currently 32).
+The size of the table is equal to the size of the universe MINUS one:
+    - we need to exclude the portfolio (say SAN.MC) from the universe of rics
+    - we do not want a correlation of 1 of the portfolio vs itself
+    
 The correlation will that of SAN.MC vs each element of the universe.
 The abs_correlation is the absolute value of the correlation.
 The beta is vs the given benchmark (here ^STOXX)
@@ -54,14 +57,8 @@ hedge_beta will be the beta vs benchmark of the optimal hedge in mn USD
 
 The size of the second table is len(number_hedges) * len(epsilons)
 
-You can test your code on your computer before sending it to github.
-To test your code, you can run the ' pytest ' command on your command line or select
-run test option in spyder and select test_homework01.py .
-Remember to install pytest using $pip install pytest or $conda install pytest
-
 
 '''
-
 def create_dataframe_top_correlations(portfolio, benchmark, universe):
     df = pd.DataFrame()
     # columns = security + list of metrics
