@@ -23,7 +23,7 @@ import homework_03 as hw;
 '''
 NO OLVIDES PONER TU NUMERO DE CUENTA!
 '''
-numero_cuenta = 
+numero_cuenta = 313198799
 
 def test_1():
     time.sleep(2)
