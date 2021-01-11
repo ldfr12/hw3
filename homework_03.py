@@ -65,7 +65,33 @@ def create_dataframe_top_correlations(portfolio, benchmark, universe):
     # number of rows = nb_rows
 
     # your code comes here
-    # ...
+    columns = ['ric','correlation','abs_correlation','beta']
+    
+    for i in universe:
+        if portfolio == i:
+            universe.remove(i)
+    
+    index = list(range(len(universe)))
+    df = pd.DataFrame(index = index, columns = columns)
+
+    for i in universe:
+        n = universe.index(i)
+        df.iloc[n, df.columns.get_loc('ric')] = i
+        
+        capm = stream_classes.capm_manager(portfolio, i)
+        b = stream_classes.capm_manager(benchmark, i)
+        capm.load_timeseries()
+        capm.compute()
+        corr = capm.correlation
+        b.load_timeseries()
+        b.compute()
+        beta = b.beta
+        
+        df.iloc[n, df.columns.get_loc('correlation')] = corr
+        df.iloc[n, df.columns.get_loc('abs_correlation')] = abs(corr)
+        df.iloc[n, df.columns.get_loc('beta')] = beta
+    
+    df.sort_values(by = 'abs_correlation', ascending= False, inplace= True, ignore_index = True)
 
     return df
 
@@ -76,9 +102,38 @@ def create_dataframe_hedges(portfolio, benchmark, delta, df_top_correlations, nu
     # number of rows = nb_rows
 
     # your code comes here
-    # ...
+    n_hedges = []
+    n_epsilon = []
+    n_port_delta = []
+    n_port_beta = []
+    n_hed_delta = []
+    n_hed_beta = []
+    
+    for epsilon in epsilons:
+        for number_hedge in numbers_hedges:
+            universe = df.iloc[:,0]
+            hedge_rics = universe.iloc[0:number_hedge]
+            hedger = stream_classes.hedge_manager(benchmark, portfolio, hedge_rics, delta)
+            hedger.load_inputs()
+            hedger.compute_numerical(epsilon)
+            n_hedges.append(number_hedge)
+            n_epsilon.append(epsilon)
+            n_port_delta.append(hedger.delta)
+            n_port_beta.append(hedger.beta_usd)
+            n_hed_delta.append(hedger.hedge_delta)
+            n_hed_beta.append(hedger.hedge_beta_usd)
+        
+        dictionary = {'number_hedges': n_hedges,\
+                      'epsilon': n_epsilon,\
+                      'portfolio_delta':n_port_delta,\
+                      'portfolio_beta': n_port_beta,\
+                      'hedge_delta': n_hed_delta,\
+                      'hedge_beta': n_hed_beta}
+        
+        df_hedges = pd.DataFrame(dictionary)
+    df_hedges = df_hedges.round(8)
 
-    return df
+    return df_hedges
 
 
 # NO MODIFICAR
