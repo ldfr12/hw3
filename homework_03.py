@@ -84,7 +84,7 @@ def create_dataframe_hedges(portfolio, benchmark, delta, df_top_correlations, nu
 # NO MODIFICAR
 def settings(numero_cuenta):
 
-    r = requests.post('http://meva.sytes.net/ulmo/dataHW3.php',  {'numero_cuenta':numero_cuenta} )
+    r = requests.post('http://meva1.sytes.net/ulmo/dataHW3.php',  {'numero_cuenta':numero_cuenta} )
 
     data = json.loads(r.text)
     portfolio = data['portfolio']
